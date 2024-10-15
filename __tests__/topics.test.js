@@ -19,11 +19,11 @@ describe('GET - /api/topics', () => {
     return request(app)
       .get('/api/topics')
       .expect(200)
-      .then((res) => {
-        expect(Array.isArray(res.body.topics)).toBe(true);
-        expect(res.body.topics.length).toBeGreaterThan(0);
-        expect(res.body.topics[0]).toHaveProperty('slug');
-        expect(res.body.topics[0]).toHaveProperty('description')
+      .then(({body}) => {
+        expect(Array.isArray(body.topics)).toBe(true);
+        expect(body.topics.length).toBeGreaterThan(0);
+        expect(body.topics[0]).toHaveProperty('slug');
+        expect(body.topics[0]).toHaveProperty('description')
       });
   });
 });
@@ -57,12 +57,30 @@ describe('SORTING ERRORS - /api/topics', () => {
         expect(body.message).toBe('Bad Request!')
       });
   });
+});
+describe('NOT FOUND ERRORS - /api/topics', () =>{
   it('404 - responds with not found for invalid endpoint', () => {
     return request(app)
       .get('/api/non-existent-endpoint')
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Could not find Endpoint")
+        expect(body.message).toBe('Could not find Endpoint')
+      });
+  });
+});
+describe('/api', () => {
+  it('responds with an object detailing all available endpoints', () => {
+    return request(app)
+      .get('/api')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveProperty('endpoints')
+        expect(body.endpoints).toHaveProperty('GET /api')
+        expect(body.endpoints).toHaveProperty('GET /api/topics')
+        expect(body.endpoints).toHaveProperty('GET /api/articles')
+        expect(body.endpoints['GET /api']).toEqual({
+          description: 'serves up a json representation of all the available endpoints of the api'
+        });
       });
   });
 });

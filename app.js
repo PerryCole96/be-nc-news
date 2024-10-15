@@ -1,15 +1,17 @@
-
 const express = require('express');
-const { sendAllTopics } = require('./controllers');
+const { fetchTopics} = require('./controllers');
 const app = express();
+const { getApi } = require('./controllers'); 
 
 app.use(express.json());
 
-app.get('/api/topics', sendAllTopics);
+app.get('/api', getApi)
+
+app.get('/api/topics', fetchTopics);
 
 app.use((req, res) => {
-    res.status(404).send({ message: 'Could not find Endpoint' });
-  });
+  res.status(404).send({ message: 'Could not find Endpoint' });
+});
 
 app.use((err, req, res, next) => {
   console.log(err)
