@@ -6,12 +6,10 @@ const testData = require('../db/data/test-data');
 
 beforeEach(() => {
   return seed(testData)
-
 });
 
 afterAll(() => {
   return db.end()
-
 });
 
 describe('GET - /api/topics', () => {
@@ -26,9 +24,6 @@ describe('GET - /api/topics', () => {
         expect(body.topics[0]).toHaveProperty('description')
       });
   });
-});
-
-describe('SORTING - /api/topics', () => {
   it('200 - responds with topics sorted by slug in ascending order as default', () => {
     return request(app)
       .get('/api/topics')
@@ -37,7 +32,6 @@ describe('SORTING - /api/topics', () => {
         expect(body.topics).toBeSortedBy('slug')
       });
   });
-
   it('200 - responds with topics sorted by description when passed a sort_by query', () => {
     return request(app)
       .get('/api/topics?sort_by=description')
@@ -48,7 +42,8 @@ describe('SORTING - /api/topics', () => {
   });
 });
 
-describe('SORTING ERRORS - /api/topics', () => {
+
+describe('ERRORS - /api/topics', () => {
   it('400 - returns an error when given an invalid column as a sort_by', () => {
     return request(app)
       .get('/api/topics?sort_by=nonsense')
@@ -57,8 +52,6 @@ describe('SORTING ERRORS - /api/topics', () => {
         expect(body.message).toBe('Bad Request!')
       });
   });
-});
-describe('NOT FOUND ERRORS - /api/topics', () =>{
   it('404 - responds with not found for invalid endpoint', () => {
     return request(app)
       .get('/api/non-existent-endpoint')
@@ -68,6 +61,46 @@ describe('NOT FOUND ERRORS - /api/topics', () =>{
       });
   });
 });
+
+
+describe('GET - /api/articles/:article_id', () => {
+  it('200 - responds with an article object for a valid ID', () => {
+    return request(app)
+      .get('/api/articles/1') 
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveProperty('author')
+        expect(body).toHaveProperty('title')
+        expect(body).toHaveProperty('article_id', 1)
+        expect(body).toHaveProperty('topic')
+        expect(body).toHaveProperty('created_at')
+        expect(body).toHaveProperty('votes')
+        expect(body).toHaveProperty('article_img_url')
+      });
+  });
+});
+
+
+  describe('ERRORS - /api/articles/:article_id', () => {
+  it('404 - responds with an error message for a non-existent article ID', () => {
+    return request(app)
+      .get('/api/articles/999')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe('Article not found');
+      });
+  });
+  it('400 - responds with an error message for an invalid article ID', () => {
+    return request(app)
+      .get('/api/articles/not-a-number')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe('Bad Request!');
+      });
+  });
+});
+
+
 describe('/api', () => {
   it('responds with an object detailing all available endpoints', () => {
     return request(app)

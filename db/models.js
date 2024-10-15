@@ -8,3 +8,11 @@ exports.getTopics = (sortColumn) => {
       return rows
     })
   };
+
+  exports.getArticleById = (articleId) => {
+    const queryStr = 'SELECT * FROM articles WHERE article_id = $1';
+    return db.query(queryStr, [articleId])
+      .then(({ rows }) => {
+        return rows[0]; 
+      });
+  };
