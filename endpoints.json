@@ -25,5 +25,8 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "fetches an article by its ID"
   }
 }

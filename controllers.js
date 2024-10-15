@@ -1,4 +1,4 @@
-const { getTopics } = require('./db/models');
+const { getTopics, getArticleById } = require('./db/models');
 const fs = require('fs');
 const path = require('path');
 const endpoints = require('./endpoints.json');
@@ -17,8 +17,28 @@ exports.fetchTopics = (req, res, next) => {
     })
     .catch(next)
 };
+exports.fetchArticle = (req, res, next) => {
+  const { article_id } = req.params;
 
+  
+  if (isNaN(article_id)) {
+      return res.status(400).send({ message: 'Bad Request!' });
+  }
+
+  getArticleById(article_id)
+      .then(article => {
+          if (!article) {
+              return res.status(404).send({ message: 'Article not found' });
+          }
+          res.status(200).send(article);
+      })
+      .catch(err => {
+          console.error(err);
+          next(err);
+      });
+};
 
 exports.getApi = (req, res, next) => {
   res.status(200).send({ endpoints });
 };
+
