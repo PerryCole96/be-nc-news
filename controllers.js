@@ -1,4 +1,4 @@
-const { getTopics, getArticleById } = require('./db/models');
+const { getTopics, getArticleById, getArticles } = require('./db/models');
 const fs = require('fs');
 const path = require('path');
 const endpoints = require('./endpoints.json');
@@ -17,6 +17,7 @@ exports.fetchTopics = (req, res, next) => {
     })
     .catch(next)
 };
+
 exports.fetchArticle = (req, res, next) => {
   const { article_id } = req.params;
 
@@ -38,7 +39,28 @@ exports.fetchArticle = (req, res, next) => {
       });
 };
 
+exports.fetchArticles = (req, res, next) => {
+  const { sort_by } = req.query;
+
+  
+  const validSortColumns = ['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'article_img_url', 'comment_count'];
+
+  
+  if (sort_by && !validSortColumns.includes(sort_by)) {
+    return res.status(400).send({ message: 'Bad Request!' })
+  }
+
+  
+  const sortColumn = sort_by || 'created_at'
+  
+  getArticles(sortColumn)
+    .then((articles) => {
+      res.status(200).send({ articles })
+    })
+    .catch(next)
+  }
+
 exports.getApi = (req, res, next) => {
-  res.status(200).send({ endpoints });
-};
+  res.status(200).send({ endpoints })
+}
 

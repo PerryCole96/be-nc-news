@@ -62,6 +62,58 @@ describe('ERRORS - /api/topics', () => {
   });
 });
 
+describe('GET /api/articles', () => {
+  it('should return an array of all articles', () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.articles)).toBe(true);
+        expect(body.articles.length).toBeGreaterThan(0);
+        expect(body.articles[0]).toHaveProperty('author');
+        expect(body.articles[0]).toHaveProperty('title');
+        expect(body.articles[0]).toHaveProperty('article_id');
+        expect(body.articles[0]).toHaveProperty('topic')
+        expect(body.articles[0]).toHaveProperty('created_at')
+        expect(body.articles[0]).toHaveProperty('votes');
+        expect(body.articles[0]).toHaveProperty('article_img_url')
+        expect(body.articles[0]).toHaveProperty('comment_count')
+      });
+  });
+  it('200 - responds with articles sorted by date in descending order', () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        const sortedArticles = body.articles.map(article => ({
+          ...article,
+          created_at: new Date(article.created_at)
+        }));
+        expect(sortedArticles).toBeSortedBy('created_at', { descending: true });
+      });
+  });
+});
+
+describe('ERRORS - /api/articles', () => {
+  it('400 - returns an error when given an invalid column as a sort_by query for /api/articles', () => {
+    return request(app)
+      .get('/api/articles?sort_by=invalid_column')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe('Bad Request!')
+      });
+  });
+  it('200 - ensures articles do not contain a body property', () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach(article => {
+          expect(article.body).toBeUndefined()
+        });
+      });
+  });
+})
 
 describe('GET - /api/articles/:article_id', () => {
   it('200 - responds with an article object for a valid ID', () => {
@@ -81,7 +133,7 @@ describe('GET - /api/articles/:article_id', () => {
 });
 
 
-  describe('ERRORS - /api/articles/:article_id', () => {
+describe('ERRORS - /api/articles/:article_id', () => {
   it('404 - responds with an error message for a non-existent article ID', () => {
     return request(app)
       .get('/api/articles/999')
@@ -90,7 +142,7 @@ describe('GET - /api/articles/:article_id', () => {
         expect(body.message).toBe('Article not found');
       });
   });
-  it('400 - responds with an error message for an invalid article ID', () => {
+it('400 - responds with an error message for an invalid article ID', () => {
     return request(app)
       .get('/api/articles/not-a-number')
       .expect(400)
