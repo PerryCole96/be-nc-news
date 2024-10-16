@@ -28,5 +28,21 @@
   },
   "GET /api/articles/:article_id": {
     "description": "fetches an article by its ID"
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "fetches an array of comments for a given article ID",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 1,
+          "votes": 16,
+          "created_at": "2020-04-07T22:57:00.000Z",
+          "author": "butter_bridge",
+          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          "article_id": 9
+        }
+      ]
+    }
   }
 }
