@@ -1,5 +1,5 @@
 const express = require('express');
-const { fetchTopics, fetchArticle, fetchArticles, fetchComments,} = require('./controllers')
+const { fetchTopics, fetchArticle, fetchArticles, fetchComments,postComment} = require('./controllers')
 const app = express();
 const { getApi } = require('./controllers'); 
 
@@ -11,7 +11,7 @@ app.get('/api/articles', fetchArticles);
 app.get('/api/articles/:article_id', fetchArticle);
 app.get('/api/articles/:article_id/comments', fetchComments);
 
-
+app.post('/api/articles/:article_id/comments', postComment);
 
 app.use((req, res) => {
   res.status(404).send({ message: 'Could not find Endpoint' })

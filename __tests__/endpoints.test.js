@@ -209,6 +209,66 @@ describe('ERRORS - /api/articles/:article_id/comments', () => {
   });
 });
 
+describe('POST - /api/articles/:article_id/comments', () => {
+  it('201 - should add a comment for the given article_id', () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "This is a new comment."
+    };
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toHaveProperty('comment_id'); 
+        expect(body.comment).toHaveProperty('author', newComment.username);
+        expect(body.comment).toHaveProperty('body', newComment.body);
+        expect(body.comment).toHaveProperty('article_id', 1)
+        expect(body.comment).toHaveProperty('votes', 0)
+        expect(body.comment).toHaveProperty('created_at')
+      })
+  });
+});
+describe('POST ERRORS - /api/articles/:article_id/comments', () => {
+  it('400 - responds with an error when missing username or body', () => {
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send({ username: "butter_bridge" }) 
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe('Bad Request! Missing required fields.')
+      });
+  });
+
+  it('400 - responds with an error for an invalid article_id', () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "This is a new comment."
+    };
+    return request(app)
+      .post('/api/articles/not-a-number/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe('Unable to post! Invalid article ID.');
+      });
+  });
+
+  it('404 - responds with an error if the article_id does not exist', () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "This comment should not be added."
+    };
+    return request(app)
+      .post('/api/articles/9999/comments') 
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe('Article not found');
+      });
+  });
+});
+
 describe('/api', () => {
   it('responds with an object detailing all available endpoints', () => {
     return request(app)
