@@ -323,6 +323,43 @@ describe('ERRORS - PATCH /api/articles/:article_id', () => {
   });
 });
 
+describe('DELETE - /api/comments/:comment_id', () => {
+    it('204 - successfully deletes the comment by ID', () => {
+      return request(app)
+        .delete('/api/comments/1') 
+        .expect(204)
+        .then(() => {
+          return request(app)
+            .get('/api/articles/1/comments') 
+            .expect(200)
+            .then(({ body }) => {
+              const commentIds = body.comments.map(comment => comment.comment_id);
+              expect(commentIds).not.toContain(1);
+            });
+        });
+    });
+
+  describe('ERRORS - invalid comment IDs', () => {
+    it('404 - responds with an error if the comment_id does not exist', () => {
+      return request(app)
+        .delete('/api/comments/9999')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe('Comment not found');
+        });
+    });
+
+    it('400 - responds with an error for an invalid comment_id', () => {
+      return request(app)
+        .delete('/api/comments/not-a-number')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe('Bad Request!');
+        });
+    });
+  });
+});
+
 describe('/api', () => {
   it('responds with an object detailing all available endpoints', () => {
     return request(app)

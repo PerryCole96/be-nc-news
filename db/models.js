@@ -80,3 +80,14 @@ exports.checkIfArticleExists = (articleId) => {
       }
     });
 };
+
+exports.removeCommentById = (commentId) => {
+  const queryStr = 'DELETE FROM comments WHERE comment_id = $1';
+  return db.query(queryStr, [commentId]).then(({ rowCount }) => {
+    if (rowCount === 0) {
+      const err = new Error('Comment not found');
+      err.status = 404;
+      throw err;
+    }
+  });
+};

@@ -6,6 +6,7 @@ const {
   getCommentsByArticleId,
   addComment,
   updateVotes,
+  removeCommentById
 } = require('./db/models');
 const fs = require('fs');
 const path = require('path');
@@ -133,6 +134,21 @@ exports.patchArticle = (req, res, next) => {
     .catch(next);
 };
 
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+
+  if (isNaN(comment_id)) {
+    return res.status(400).send({ message: 'Bad Request!' });
+  }
+
+  removeCommentById(comment_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch(next);
+};
+
 exports.getApi = (req, res) => {
   res.status(200).send({ endpoints });
 };
+

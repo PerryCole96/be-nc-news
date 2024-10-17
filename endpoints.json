@@ -76,5 +76,19 @@
         "article_img_url": "https://example.com/image.jpg"
       }
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes a comment by its ID",
+    "exampleResponse": {
+      "message": "Comment deleted successfully"
+    },
+    "errorResponses": {
+      "404": {
+        "description": "Comment not found"
+      },
+      "400": {
+        "description": "Bad Request! Invalid comment_id"
+      }
+    }
   }
 }
