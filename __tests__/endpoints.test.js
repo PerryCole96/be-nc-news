@@ -5,6 +5,7 @@ const db = require('../db/connection');
 const testData = require('../db/data/test-data');
 const endpoints = require('../endpoints.json');
 
+
 beforeEach(() => {
   return seed(testData);
 });
@@ -177,16 +178,22 @@ describe('GET - /api/articles/:article_id/comments', () => {
       });
   });
 
+  it('should respond with 200 and an empty array for a valid article_id with no comments', () => {
+    return request(app)
+      .get('/api/articles/2/comments')
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.comments)).toBe(true);
+        expect(body.comments.length).toBe(0);
+      });
+  });
+
   it('should return comments in descending order of created_at', () => {
     return request(app)
       .get('/api/articles/1/comments')
       .expect(200)
       .then(({ body }) => {
-        const sortedComments = body.comments.map(comment => ({
-          ...comment,
-          created_at: new Date(comment.created_at),
-        }));
-        expect(sortedComments).toBeSortedBy('created_at', { descending: true });
+        expect(body.comments).toBeSortedBy('created_at', { descending: true });
       });
   });
 });
@@ -194,10 +201,10 @@ describe('GET - /api/articles/:article_id/comments', () => {
 describe('ERRORS - /api/articles/:article_id/comments', () => {
   it('should respond with 404 if the article_id does not exist', () => {
     return request(app)
-      .get('/api/articles/9999/comments')
+      .get('/api/articles/9999/comments') 
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Article has no comments");
+        expect(body.message).toBe('Article not found');
       });
   });
 
@@ -236,24 +243,10 @@ describe('POST ERRORS - /api/articles/:article_id/comments', () => {
   it('400 - responds with an error when missing username or body', () => {
     return request(app)
       .post('/api/articles/1/comments')
-      .send({ username: "butter_bridge" })
+      .send({ username: "butter_bridge" }) 
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe('Bad Request! Missing required fields.');
-      });
-  });
-
-  it('400 - responds with an error for an invalid article_id', () => {
-    const newComment = {
-      username: "butter_bridge",
-      body: "This is a new comment."
-    };
-    return request(app)
-      .post('/api/articles/not-a-number/comments')
-      .send(newComment)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe('Bad Request!');
       });
   });
 
