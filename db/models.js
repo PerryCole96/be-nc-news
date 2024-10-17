@@ -44,3 +44,17 @@ exports.getCommentsByArticleId = (articleId) => {
   return db.query(queryStr, [articleId])
     .then(({ rows }) => rows)
 };
+
+exports.addComment = (username, body, articleId) => {
+  const queryStr = `
+    INSERT INTO comments (body, author, article_id) 
+    VALUES ($1, $2, $3) 
+    RETURNING *;
+  `;
+  return db.query(queryStr, [body, username, articleId]).then(({ rows }) => {
+    if (rows.length === 0) {
+      throw { status: 404, message: 'Article not found' };
+    }
+    return rows[0];
+  });
+};

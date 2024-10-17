@@ -1,4 +1,4 @@
-const { getTopics, getArticleById, getArticles, getCommentsByArticleId } = require('./db/models');
+const { getTopics, getArticleById, getArticles, getCommentsByArticleId, addComment } = require('./db/models');
 const fs = require('fs');
 const path = require('path');
 const endpoints = require('./endpoints.json');
@@ -10,6 +10,7 @@ exports.fetchTopics = (req, res, next) => {
   if (sort_by && !validSortbys.includes(sort_by)) {
     return res.status(400).send({ message: 'Bad Request!' })
   }
+  
   const sortColumn = sort_by || 'slug'
   getTopics(sortColumn)
     .then((topics) => {
@@ -72,6 +73,31 @@ exports.fetchComments = (req, res, next) => {
     })
     .catch(next)
 };
+
+exports.postComment = (req, res, next) => {
+  const { article_id } = req.params;
+  const { username, body } = req.body;
+
+  if (!username || !body) {
+    return res.status(400).send({ message: 'Bad Request! Missing required fields.' });
+  }
+
+  if (isNaN(article_id)) {
+    return res.status(400).send({ message: 'Unable to post! Invalid article ID.' });
+  }
+
+  getArticleById(article_id)
+    .then(article => {
+      if (!article) {
+        return res.status(404).send({ message: 'Article not found' });
+      }
+      return addComment(username, body, article_id);
+    })
+    .then((comment) => {
+      res.status(201).send({ comment });
+    })
+    .catch(next)
+    }
 
 exports.getApi = (req, res, next) => {
   res.status(200).send({ endpoints })
