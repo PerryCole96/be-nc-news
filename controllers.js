@@ -6,7 +6,8 @@ const {
   getCommentsByArticleId,
   addComment,
   updateVotes,
-  removeCommentById
+  removeCommentById,
+  getUsers,
 } = require('./db/models');
 const fs = require('fs');
 const path = require('path');
@@ -146,6 +147,24 @@ exports.deleteComment = (req, res, next) => {
       res.status(204).send();
     })
     .catch(next);
+};
+
+exports.fetchAllUsers = (req, res, next) => {
+  const { sort_by } = req.query;
+  const validSortColumns = ['username', 'name'];
+
+  if (sort_by && !validSortColumns.includes(sort_by)) {
+    return res.status(400).send({ message: 'Bad Request! Invalid sort_by parameter.' });
+  }
+
+  const sortColumn = sort_by || 'username';
+  getUsers(sortColumn) 
+    .then(users => {
+      res.status(200).send({ users });
+    })
+    .catch((error) => {
+      next(error); 
+    });
 };
 
 exports.getApi = (req, res) => {

@@ -360,6 +360,50 @@ describe('DELETE - /api/comments/:comment_id', () => {
   });
 });
 
+describe('GET - /api/users', () => {
+  it('responds with status 200 and an array of users', () => {
+    return request(app)
+      .get('/api/users')
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.users)).toBe(true);
+        expect(body.users.length).toBeGreaterThan(0);
+        expect(body.users[0]).toHaveProperty('username');
+        expect(body.users[0]).toHaveProperty('name');
+        expect(body.users[0]).toHaveProperty('avatar_url');
+      });
+  });
+
+  it('200 - responds with users sorted by username in ascending order as default', () => {
+    return request(app)
+      .get('/api/users')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).toBeSortedBy('username');
+      });
+  });
+
+  it('200 - responds with users sorted by name when passed a sort_by query', () => {
+    return request(app)
+      .get('/api/users?sort_by=name')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).toBeSortedBy('name', { descending: false });
+      });
+  });
+});
+
+describe('ERRORS - /api/users', () => {
+  it('404 - responds with not found for invalid endpoint', () => {
+    return request(app)
+      .get('/api/non-existent-endpoint')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe('Could not find Endpoint');
+      });
+  });
+});
+
 describe('/api', () => {
   it('responds with an object detailing all available endpoints', () => {
     return request(app)
