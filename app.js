@@ -29,11 +29,11 @@ app.use((req, res) => {
 
 
 app.use((err, req, res, next) => {
-  console.error(err);
-  const status = err.status || 500;
-  const message = err.message || 'Internal Server Error';
+  console.log('Error:', err.message || 'An error occurred');
 
-  res.status(status).send({ msg: message });
+  res.status(err.status || 500).json({
+    message: err.message || 'Internal Server Error',
+  });
 });
 
 module.exports = app;

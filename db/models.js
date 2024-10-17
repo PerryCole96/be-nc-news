@@ -69,3 +69,14 @@ exports.updateVotes = (articleId, incVotes) => {
   return db.query(queryStr, [incVotes, articleId])
     .then(({ rows }) => rows[0]);
 };
+exports.checkIfArticleExists = (articleId) => {
+  const queryStr = 'SELECT * FROM articles WHERE article_id = $1';
+  return db.query(queryStr, [articleId])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        const err = new Error('Article not found');
+        err.status = 404;
+        throw err;
+      }
+    });
+};

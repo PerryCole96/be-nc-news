@@ -2,6 +2,7 @@ const {
   getTopics,
   getArticleById,
   getArticles,
+  checkIfArticleExists,
   getCommentsByArticleId,
   addComment,
   updateVotes,
@@ -38,7 +39,7 @@ exports.fetchArticle = (req, res, next) => {
       if (!article) {
         return res.status(404).send({ message: 'Article not found' });
       }
-      res.status(200).send({ ...article }); 
+      res.status(200).send({ ...article });  
     })
     .catch(next);
 };
@@ -73,18 +74,22 @@ exports.fetchComments = (req, res, next) => {
   const { article_id } = req.params;
 
   if (isNaN(article_id)) {
-    return res.status(400).send({ message: 'Bad Request!' }); 
+    return res.status(400).send({ message: 'Bad Request!' });
   }
 
-  getCommentsByArticleId(article_id)
-    .then((comments) => {
-      if (comments.length === 0) {
-        return res.status(404).send({ message: 'Article has no comments' }); 
+  getArticleById(article_id)
+    .then((article) => {
+      if (!article) {
+        return res.status(404).send({ message: 'Article not found' });
       }
+      return getCommentsByArticleId(article_id);
+    })
+    .then((comments) => {
       res.status(200).send({ comments });
     })
     .catch(next);
 };
+
 
 exports.postComment = (req, res, next) => {
   const { article_id } = req.params;
@@ -94,14 +99,11 @@ exports.postComment = (req, res, next) => {
     return res.status(400).send({ message: 'Bad Request! Missing required fields.' });
   }
   if (isNaN(article_id)) {
-    return res.status(400).send({ message: 'Bad Request!' }); 
+    return res.status(400).send({ message: 'Bad Request!' });
   }
 
-  getArticleById(article_id)
-    .then((article) => {
-      if (!article) {
-        return res.status(404).send({ message: 'Article not found' });
-      }
+  checkIfArticleExists(article_id)
+    .then(() => {
       return addComment(username, body, article_id);
     })
     .then((comment) => {
@@ -115,21 +117,18 @@ exports.patchArticle = (req, res, next) => {
   const { inc_votes } = req.body;
 
   if (isNaN(article_id)) {
-    return res.status(400).send({ message: 'Bad Request!' }); 
+    return res.status(400).send({ message: 'Bad Request!' });
   }
   if (typeof inc_votes !== 'number') {
     return res.status(400).send({ message: 'Bad Request! inc_votes must be a number.' });
   }
 
-  getArticleById(article_id)
-    .then((article) => {
-      if (!article) {
-        return res.status(404).send({ message: 'Article not found' });
-      }
+  checkIfArticleExists(article_id)
+    .then(() => {
       return updateVotes(article_id, inc_votes);
     })
     .then((updatedArticle) => {
-      res.status(200).send({ article: updatedArticle }); 
+      res.status(200).send({ article: updatedArticle });
     })
     .catch(next);
 };
