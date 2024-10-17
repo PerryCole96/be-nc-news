@@ -54,6 +54,7 @@ describe('ERRORS - /api/topics', () => {
         expect(body.message).toBe('Bad Request!');
       });
   });
+
   it('404 - responds with not found for invalid endpoint', () => {
     return request(app)
       .get('/api/non-existent-endpoint')
@@ -65,7 +66,7 @@ describe('ERRORS - /api/topics', () => {
 });
 
 describe('GET /api/articles', () => {
-  it('should return an array of all articles', () => {
+  it('should return an array of all articles with the correct properties', () => {
     return request(app)
       .get('/api/articles')
       .expect(200)
@@ -80,6 +81,7 @@ describe('GET /api/articles', () => {
         expect(body.articles[0]).toHaveProperty('votes');
         expect(body.articles[0]).toHaveProperty('article_img_url');
         expect(body.articles[0]).toHaveProperty('comment_count');
+        expect(body.articles[0]).not.toHaveProperty('body');
       });
   });
 
@@ -91,7 +93,7 @@ describe('GET /api/articles', () => {
         const sortedArticles = body.articles.map(article => ({
           ...article,
           created_at: new Date(article.created_at),
-        }))
+        }));
         expect(sortedArticles).toBeSortedBy('created_at', { descending: true });
       });
   });
@@ -104,9 +106,9 @@ describe('ERRORS - /api/articles', () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe('Bad Request!');
-      })
+      });
   });
-  
+
   it('200 - ensures articles do not contain a body property', () => {
     return request(app)
       .get('/api/articles')
@@ -114,7 +116,7 @@ describe('ERRORS - /api/articles', () => {
       .then(({ body: { articles } }) => {
         articles.forEach(article => {
           expect(article.body).toBeUndefined();
-        })
+        });
       });
   });
 });
@@ -132,7 +134,7 @@ describe('GET - /api/articles/:article_id', () => {
         expect(body).toHaveProperty('created_at');
         expect(body).toHaveProperty('votes');
         expect(body).toHaveProperty('article_img_url');
-      })
+      });
   });
 });
 
@@ -142,7 +144,7 @@ describe('ERRORS - /api/articles/:article_id', () => {
       .get('/api/articles/999')
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe('Article not found')
+        expect(body.message).toBe('Article not found');
       });
   });
 
@@ -151,27 +153,26 @@ describe('ERRORS - /api/articles/:article_id', () => {
       .get('/api/articles/not-a-number')
       .expect(400)
       .then(({ body }) => {
-        expect(body.message).toBe('Bad Request!')
+        expect(body.message).toBe('Bad Request!');
       });
   });
 });
 
-
 describe('GET - /api/articles/:article_id/comments', () => {
   it('should return an array of comments for the given article_id', () => {
     return request(app)
-      .get('/api/articles/1/comments') 
+      .get('/api/articles/1/comments')
       .expect(200)
       .then(({ body }) => {
         expect(Array.isArray(body.comments)).toBe(true);
-        expect(body.comments.length).toBeGreaterThan(0)
+        expect(body.comments.length).toBeGreaterThan(0);
         body.comments.forEach(comment => {
-          expect(comment).toHaveProperty('comment_id')
+          expect(comment).toHaveProperty('comment_id');
           expect(comment).toHaveProperty('votes');
-          expect(comment).toHaveProperty('created_at')
-          expect(comment).toHaveProperty('author')
+          expect(comment).toHaveProperty('created_at');
+          expect(comment).toHaveProperty('author');
           expect(comment).toHaveProperty('body');
-          expect(comment).toHaveProperty('article_id', 1)
+          expect(comment).toHaveProperty('article_id', 1);
         });
       });
   });
@@ -185,7 +186,7 @@ describe('GET - /api/articles/:article_id/comments', () => {
           ...comment,
           created_at: new Date(comment.created_at),
         }));
-        expect(sortedComments).toBeSortedBy('created_at', { descending: true })
+        expect(sortedComments).toBeSortedBy('created_at', { descending: true });
       });
   });
 });
@@ -193,10 +194,10 @@ describe('GET - /api/articles/:article_id/comments', () => {
 describe('ERRORS - /api/articles/:article_id/comments', () => {
   it('should respond with 404 if the article_id does not exist', () => {
     return request(app)
-      .get('/api/articles/9999/comments') 
+      .get('/api/articles/9999/comments')
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Article has no comments")
+        expect(body.message).toBe("Article has no comments");
       });
   });
 
@@ -205,7 +206,7 @@ describe('ERRORS - /api/articles/:article_id/comments', () => {
       .get('/api/articles/not-a-number/comments')
       .expect(400)
       .then(({ body }) => {
-        expect(body.message).toBe('Bad Request!')
+        expect(body.message).toBe('Bad Request!');
       });
   });
 });
@@ -221,23 +222,24 @@ describe('POST - /api/articles/:article_id/comments', () => {
       .send(newComment)
       .expect(201)
       .then(({ body }) => {
-        expect(body.comment).toHaveProperty('comment_id'); 
+        expect(body.comment).toHaveProperty('comment_id');
         expect(body.comment).toHaveProperty('author', newComment.username);
         expect(body.comment).toHaveProperty('body', newComment.body);
-        expect(body.comment).toHaveProperty('article_id', 1)
-        expect(body.comment).toHaveProperty('votes', 0)
-        expect(body.comment).toHaveProperty('created_at')
-      })
+        expect(body.comment).toHaveProperty('article_id', 1);
+        expect(body.comment).toHaveProperty('votes', 0);
+        expect(body.comment).toHaveProperty('created_at');
+      });
   });
 });
+
 describe('POST ERRORS - /api/articles/:article_id/comments', () => {
   it('400 - responds with an error when missing username or body', () => {
     return request(app)
       .post('/api/articles/1/comments')
-      .send({ username: "butter_bridge" }) 
+      .send({ username: "butter_bridge" })
       .expect(400)
       .then(({ body }) => {
-        expect(body.message).toBe('Bad Request! Missing required fields.')
+        expect(body.message).toBe('Bad Request! Missing required fields.');
       });
   });
 
@@ -261,7 +263,7 @@ describe('POST ERRORS - /api/articles/:article_id/comments', () => {
       body: "This comment should not be added."
     };
     return request(app)
-      .post('/api/articles/9999/comments') 
+      .post('/api/articles/9999/comments')
       .send(newComment)
       .expect(404)
       .then(({ body }) => {
@@ -269,6 +271,7 @@ describe('POST ERRORS - /api/articles/:article_id/comments', () => {
       });
   });
 });
+
 describe('PATCH - /api/articles/:article_id', () => {
   it('200 - successfully increments the vote count of an article by the given value', () => {
     return request(app)
@@ -277,8 +280,8 @@ describe('PATCH - /api/articles/:article_id', () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.article).toHaveProperty('article_id', 1);
-        expect(body.article).toHaveProperty('votes')
-        expect(body.article.votes).toBeGreaterThan(0)
+        expect(body.article).toHaveProperty('votes');
+        expect(body.article.votes).toBeGreaterThan(0);
       });
   });
 
@@ -288,12 +291,13 @@ describe('PATCH - /api/articles/:article_id', () => {
       .send({ inc_votes: -1001 })
       .expect(200)
       .then(({ body }) => {
-        expect(body.article).toHaveProperty('article_id', 1)
-        expect(body.article).toHaveProperty('votes')
+        expect(body.article).toHaveProperty('article_id', 1);
+        expect(body.article).toHaveProperty('votes');
         expect(body.article.votes).toBeLessThanOrEqual(0);
       });
   });
 });
+
 describe('ERRORS - PATCH /api/articles/:article_id', () => {
   it('400 - responds with an error for invalid article ID', () => {
     return request(app)
@@ -301,7 +305,7 @@ describe('ERRORS - PATCH /api/articles/:article_id', () => {
       .send({ inc_votes: 1 })
       .expect(400)
       .then(({ body }) => {
-        expect(body.message).toBe('Bad Request!')
+        expect(body.message).toBe('Bad Request!');
       });
   });
 
@@ -311,7 +315,7 @@ describe('ERRORS - PATCH /api/articles/:article_id', () => {
       .send({ inc_votes: 'not-a-number' })
       .expect(400)
       .then(({ body }) => {
-        expect(body.message).toBe('Bad Request! inc_votes must be a number.')
+        expect(body.message).toBe('Bad Request! inc_votes must be a number.');
       });
   });
 
@@ -321,7 +325,7 @@ describe('ERRORS - PATCH /api/articles/:article_id', () => {
       .send({ inc_votes: 1 })
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe('Article not found')
+        expect(body.message).toBe('Article not found');
       });
   });
 });
