@@ -91,3 +91,17 @@ exports.removeCommentById = (commentId) => {
     }
   });
 };
+
+exports.getUsers = (sortColumn = 'username') => {
+  const queryStr = `
+    SELECT 
+      username, 
+      name, 
+      avatar_url
+    FROM users
+    ORDER BY ${sortColumn} ASC;`;
+
+  return db.query(queryStr)
+    .then(({ rows }) => rows);
+};
+

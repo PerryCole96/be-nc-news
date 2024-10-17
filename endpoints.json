@@ -90,5 +90,18 @@
         "description": "Bad Request! Invalid comment_id"
       }
     }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": ["sort_by"],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "butter_bridge",
+          "name": "John Doe",
+          "avatar_url": "https://example.com/avatar.jpg"
+        }
+      ]
+    }
   }
 }
