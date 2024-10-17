@@ -268,6 +268,62 @@ describe('POST ERRORS - /api/articles/:article_id/comments', () => {
       });
   });
 });
+describe('PATCH - /api/articles/:article_id', () => {
+  it('200 - successfully increments the vote count of an article by the given value', () => {
+    return request(app)
+      .patch('/api/articles/1')
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toHaveProperty('article_id', 1);
+        expect(body.article).toHaveProperty('votes')
+        expect(body.article.votes).toBeGreaterThan(0)
+      });
+  });
+
+  it('200 - decrements the vote count of an article by the given value', () => {
+    return request(app)
+      .patch('/api/articles/1')
+      .send({ inc_votes: -1001 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toHaveProperty('article_id', 1)
+        expect(body.article).toHaveProperty('votes')
+        expect(body.article.votes).toBeLessThanOrEqual(0);
+      });
+  });
+});
+describe('ERRORS - PATCH /api/articles/:article_id', () => {
+  it('400 - responds with an error for invalid article ID', () => {
+    return request(app)
+      .patch('/api/articles/not-a-number')
+      .send({ inc_votes: 1 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe('Bad Request! Invalid article ID.')
+      });
+  });
+
+  it('400 - responds with an error for missing or invalid inc_votes in the request body', () => {
+    return request(app)
+      .patch('/api/articles/1')
+      .send({ inc_votes: 'not-a-number' })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe('Bad Request! inc_votes must be a number.')
+      });
+  });
+
+  it('404 - responds with an error if the article ID does not exist', () => {
+    return request(app)
+      .patch('/api/articles/9999')
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe('Article not found')
+      });
+  });
+});
 
 describe('/api', () => {
   it('responds with an object detailing all available endpoints', () => {

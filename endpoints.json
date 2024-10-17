@@ -18,7 +18,6 @@
           "title": "Seafood substitutions are increasing",
           "topic": "cooking",
           "author": "weegembump",
-          "body": "Text from the article..",
           "created_at": "2018-05-30T15:59:13.341Z",
           "votes": 0,
           "comment_count": 6
@@ -27,7 +26,19 @@
     }
   },
   "GET /api/articles/:article_id": {
-    "description": "fetches an article by its ID"
+    "description": "fetches an article by its ID",
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": "2020-07-09T20:11:00.000Z",
+        "votes": 100,
+        "article_img_url": "https://example.com/image.jpg"
+      }
+    }
   },
   "GET /api/articles/:article_id/comments": {
     "description": "fetches an array of comments for a given article ID",
@@ -43,6 +54,27 @@
           "article_id": 9
         }
       ]
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates the votes of an article by the given article_id",
+    "requestBody": {
+      "inc_votes": "an integer representing how much to increment or decrement the votes by"
+    },
+    "exampleRequest": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": "2020-07-09T20:11:00.000Z",
+        "votes": 101,
+        "article_img_url": "https://example.com/image.jpg"
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-const { getTopics, getArticleById, getArticles, getCommentsByArticleId, addComment } = require('./db/models');
+const { getTopics, getArticleById, getArticles, getCommentsByArticleId, addComment, updateVotes } = require('./db/models');
 const fs = require('fs');
 const path = require('path');
 const endpoints = require('./endpoints.json');
@@ -98,6 +98,31 @@ exports.postComment = (req, res, next) => {
     })
     .catch(next)
     }
+
+exports.patchArticle = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+    
+  if (isNaN(article_id)) {
+        return res.status(400).send({ message: 'Bad Request! Invalid article ID.' })
+      }
+    
+  if (typeof inc_votes !== 'number') {
+        return res.status(400).send({ message: 'Bad Request! inc_votes must be a number.' })
+      }
+    
+  getArticleById(article_id)
+      .then((article) => {
+        if (!article) {
+          return res.status(404).send({ message: 'Article not found' });
+          }
+          return updateVotes(article_id, inc_votes);
+        })
+      .then((updatedArticle) => {
+          res.status(200).send({ article: updatedArticle });
+        })
+      .catch(next);
+    };
 
 exports.getApi = (req, res, next) => {
   res.status(200).send({ endpoints })
