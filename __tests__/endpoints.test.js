@@ -3,6 +3,7 @@ const app = require('../app');
 const seed = require('../db/seeds/seed');
 const db = require('../db/connection');
 const testData = require('../db/data/test-data');
+const endpoints = require('../endpoints.json');
 
 beforeEach(() => {
   return seed(testData);
@@ -195,7 +196,7 @@ describe('ERRORS - /api/articles/:article_id/comments', () => {
       .get('/api/articles/9999/comments') 
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Article has no Comments")
+        expect(body.message).toBe("Article has no comments")
       });
   });
 
@@ -250,7 +251,7 @@ describe('POST ERRORS - /api/articles/:article_id/comments', () => {
       .send(newComment)
       .expect(400)
       .then(({ body }) => {
-        expect(body.message).toBe('Unable to post! Invalid article ID.');
+        expect(body.message).toBe('Bad Request!');
       });
   });
 
@@ -300,7 +301,7 @@ describe('ERRORS - PATCH /api/articles/:article_id', () => {
       .send({ inc_votes: 1 })
       .expect(400)
       .then(({ body }) => {
-        expect(body.message).toBe('Bad Request! Invalid article ID.')
+        expect(body.message).toBe('Bad Request!')
       });
   });
 
@@ -332,12 +333,7 @@ describe('/api', () => {
       .expect(200)
       .then(({ body }) => {
         expect(body).toHaveProperty('endpoints');
-        expect(body.endpoints).toHaveProperty('GET /api');
-        expect(body.endpoints).toHaveProperty('GET /api/topics');
-        expect(body.endpoints).toHaveProperty('GET /api/articles');
-        expect(body.endpoints['GET /api']).toEqual({
-          description: 'serves up a json representation of all the available endpoints of the api',
-        });
+        expect(body.endpoints).toEqual(endpoints);
       });
   });
 });

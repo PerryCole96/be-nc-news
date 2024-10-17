@@ -1,11 +1,18 @@
 const express = require('express');
-const { fetchTopics, fetchArticle, fetchArticles, fetchComments, postComment, patchArticle } = require('./controllers')
-const app = express();
-const { getApi } = require('./controllers'); 
+const {
+  fetchTopics,
+  fetchArticle,
+  fetchArticles,
+  fetchComments,
+  postComment,
+  patchArticle,
+  getApi,
+} = require('./controllers');
 
+const app = express();
 app.use(express.json());
 
-app.get('/api', getApi)
+app.get('/api', getApi);
 app.get('/api/topics', fetchTopics);
 app.get('/api/articles', fetchArticles);
 app.get('/api/articles/:article_id', fetchArticle);
@@ -15,12 +22,18 @@ app.post('/api/articles/:article_id/comments', postComment);
 
 app.patch('/api/articles/:article_id', patchArticle);
 
+
 app.use((req, res) => {
-  res.status(404).send({ message: 'Could not find Endpoint' })
+  res.status(404).send({ message: 'Could not find Endpoint' });
 });
+
+
 app.use((err, req, res, next) => {
-  console.log(err)
-  res.status(err.status || 500).send({ msg: err.message || 'Internal Server Error' })
+  console.error(err);
+  const status = err.status || 500;
+  const message = err.message || 'Internal Server Error';
+
+  res.status(status).send({ msg: message });
 });
 
 module.exports = app;
