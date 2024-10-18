@@ -32,9 +32,9 @@ exports.fetchTopics = (req, res, next) => {
 
 exports.fetchArticle = (req, res, next) => {
   const { article_id } = req.params;
-
+  
   if (isNaN(article_id)) {
-    return res.status(400).send({ message: 'Bad Request!' }); 
+    return res.status(400).send({ message: 'Bad Request!' });
   }
 
   getArticleById(article_id)
@@ -42,9 +42,12 @@ exports.fetchArticle = (req, res, next) => {
       if (!article) {
         return res.status(404).send({ message: 'Article not found' });
       }
-      res.status(200).send({ ...article });  
+      res.status(200).send(article); 
     })
-    .catch(next);
+    .catch((err) => {
+      console.error('Error:', err.message);
+      next(err);
+    });
 };
 
 exports.fetchArticles = (req, res, next) => {

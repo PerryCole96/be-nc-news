@@ -18,10 +18,26 @@ exports.checkIfTopicExists = (topic) => {
     });
 };
 
-exports.getArticleById = (articleId) => {
-  const queryStr = 'SELECT * FROM articles WHERE article_id = $1'
-  return db.query(queryStr, [articleId])
-    .then(({ rows }) => rows[0])
+exports.getArticleById = (article_id) => {
+  return db
+    .query(
+      `
+      SELECT articles.*, 
+      COUNT(comments.comment_id) AS comment_count
+      FROM articles
+      LEFT JOIN comments ON comments.article_id = articles.article_id
+      WHERE articles.article_id = $1
+      GROUP BY articles.article_id;
+    `,
+      [article_id]
+    )
+    .then((result) => {
+      const article = result.rows[0];
+      if (article) {
+        article.comment_count = Number(article.comment_count);
+      }
+      return article;
+    });
 };
 
 exports.getArticles = (sortColumn = 'created_at', sortOrder = 'DESC', topic) => {
