@@ -47,7 +47,7 @@ exports.fetchArticle = (req, res, next) => {
 };
 
 exports.fetchArticles = (req, res, next) => {
-  const { sort_by } = req.query;
+  const { sort_by, order } = req.query;
   const validSortColumns = [
     'author',
     'title',
@@ -60,12 +60,19 @@ exports.fetchArticles = (req, res, next) => {
   ];
 
   if (sort_by && !validSortColumns.includes(sort_by)) {
-    return res.status(400).send({ message: 'Bad Request!' });
+    return res.status(400).send({ message: 'Bad Request! Invalid sort_by parameter.' });
   }
 
+  
   const sortColumn = sort_by || 'created_at';
+  const sortOrder = order === 'asc' ? 'ASC' : 'DESC';
 
-  getArticles(sortColumn)
+
+  if (order && order !== 'asc' && order !== 'desc') {
+    return res.status(400).send({ message: 'Bad Request! Invalid order parameter.' });
+  }
+
+  getArticles(sortColumn, sortOrder) 
     .then((articles) => {
       res.status(200).send({ articles });
     })
@@ -170,4 +177,3 @@ exports.fetchAllUsers = (req, res, next) => {
 exports.getApi = (req, res) => {
   res.status(200).send({ endpoints });
 };
-

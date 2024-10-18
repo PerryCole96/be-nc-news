@@ -12,7 +12,19 @@ exports.getArticleById = (articleId) => {
     .then(({ rows }) => rows[0])
 };
 
-exports.getArticles = (sortColumn) => {
+exports.getArticles = (sortColumn = 'created_at', sortOrder = 'DESC') => {
+   const validSortColumns = [
+    'author',
+    'title',
+    'article_id',
+    'topic',
+    'created_at',
+    'votes',
+    'article_img_url',
+  ];
+  if (!validSortColumns.includes(sortColumn)) sortColumn = 'created_at';
+  
+  const order = sortOrder.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
   const queryStr = `
     SELECT 
       articles.author, 
@@ -26,11 +38,11 @@ exports.getArticles = (sortColumn) => {
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id
     GROUP BY articles.article_id
-    ORDER BY ${sortColumn} DESC;
+    ORDER BY ${sortColumn} ${order};
   `;
 
   return db.query(queryStr)
-    .then(({ rows }) => rows)
+    .then(({ rows }) => rows);
 };
 
 exports.getCommentsByArticleId = (articleId) => {
@@ -104,4 +116,3 @@ exports.getUsers = (sortColumn = 'username') => {
   return db.query(queryStr)
     .then(({ rows }) => rows);
 };
-
