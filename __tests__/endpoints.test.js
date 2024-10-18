@@ -210,7 +210,16 @@ describe('GET - /api/articles/:article_id', () => {
         expect(body).toHaveProperty('votes');
         expect(body).toHaveProperty('article_img_url');
       });
-  });
+});
+it('GET - /api/articles/:article_id returns an article with comment_count', () => {
+  return request(app)
+    .get('/api/articles/1')
+    .expect(200)
+    .then(({ body }) => {
+      expect(body).toHaveProperty('comment_count');
+      expect(body.comment_count).toBe(11); 
+    });
+});
 });
 
 describe('ERRORS - /api/articles/:article_id', () => {
