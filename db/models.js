@@ -6,43 +6,61 @@ exports.getTopics = (sortColumn) => {
     .then(({ rows }) => rows)
 };
 
+exports.checkIfTopicExists = (topic) => {
+  const queryStr = 'SELECT * FROM topics WHERE slug = $1';
+  return db.query(queryStr, [topic])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        const err = new Error('Topic not found');
+        err.status = 404;
+        throw err;
+      }
+    });
+};
+
 exports.getArticleById = (articleId) => {
   const queryStr = 'SELECT * FROM articles WHERE article_id = $1'
   return db.query(queryStr, [articleId])
     .then(({ rows }) => rows[0])
 };
 
-exports.getArticles = (sortColumn = 'created_at', sortOrder = 'DESC') => {
-   const validSortColumns = [
-    'author',
-    'title',
-    'article_id',
-    'topic',
-    'created_at',
-    'votes',
-    'article_img_url',
+exports.getArticles = (sortColumn = 'created_at', sortOrder = 'DESC', topic) => {
+  const validSortColumns = [
+      'author',
+      'title',
+      'article_id',
+      'topic',
+      'created_at',
+      'votes',
+      'article_img_url',
   ];
   if (!validSortColumns.includes(sortColumn)) sortColumn = 'created_at';
-  
-  const order = sortOrder.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
-  const queryStr = `
-    SELECT 
-      articles.author, 
-      articles.title, 
-      articles.article_id, 
-      articles.topic, 
-      articles.created_at, 
-      articles.votes, 
-      articles.article_img_url,
-      COUNT(comments.comment_id) AS comment_count
-    FROM articles
-    LEFT JOIN comments ON comments.article_id = articles.article_id
-    GROUP BY articles.article_id
-    ORDER BY ${sortColumn} ${order};
-  `;
 
-  return db.query(queryStr)
-    .then(({ rows }) => rows);
+  const order = sortOrder.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+  let queryStr = `
+      SELECT 
+          articles.author, 
+          articles.title, 
+          articles.article_id, 
+          articles.topic, 
+          articles.created_at, 
+          articles.votes, 
+          articles.article_img_url,
+          COUNT(comments.comment_id) AS comment_count
+      FROM articles
+      LEFT JOIN comments ON comments.article_id = articles.article_id
+  `;
+  if (topic) {
+      queryStr += ` WHERE articles.topic = $1`;
+  }
+  
+  queryStr += `
+      GROUP BY articles.article_id
+      ORDER BY ${sortColumn} ${order};
+  `;
+  const params = topic ? [topic] : [];
+  return db.query(queryStr, params)
+      .then(({ rows }) => rows);
 };
 
 exports.getCommentsByArticleId = (articleId) => {

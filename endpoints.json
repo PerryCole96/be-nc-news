@@ -10,7 +10,7 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles, sortable by various fields",
+    "description": "serves an array of all articles, sortable by various fields and filterable by topic",
     "queries": [
       {
         "name": "author",
