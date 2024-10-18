@@ -8,6 +8,7 @@ const {
   updateVotes,
   removeCommentById,
   getUsers,
+  checkIfTopicExists
 } = require('./db/models');
 const fs = require('fs');
 const path = require('path');
@@ -47,7 +48,7 @@ exports.fetchArticle = (req, res, next) => {
 };
 
 exports.fetchArticles = (req, res, next) => {
-  const { sort_by, order } = req.query;
+  const { sort_by, order, topic } = req.query;
   const validSortColumns = [
     'author',
     'title',
@@ -58,25 +59,42 @@ exports.fetchArticles = (req, res, next) => {
     'article_img_url',
     'comment_count',
   ];
-
   if (sort_by && !validSortColumns.includes(sort_by)) {
     return res.status(400).send({ message: 'Bad Request! Invalid sort_by parameter.' });
   }
 
-  
-  const sortColumn = sort_by || 'created_at';
   const sortOrder = order === 'asc' ? 'ASC' : 'DESC';
-
-
   if (order && order !== 'asc' && order !== 'desc') {
     return res.status(400).send({ message: 'Bad Request! Invalid order parameter.' });
   }
 
-  getArticles(sortColumn, sortOrder) 
-    .then((articles) => {
-      res.status(200).send({ articles });
-    })
-    .catch(next);
+  const sortColumn = sort_by || 'created_at';
+  
+  if (topic) {
+    checkIfTopicExists(topic)
+      .then(() => {
+        return getArticles(sortColumn, sortOrder, topic);
+      })
+      .then((articles) => {
+        if (articles.length === 0) {
+          return res.status(404).send({ message: `No articles found for topic: ${topic}` });
+        }
+        res.status(200).send({ articles });
+      })
+      .catch((error) => {
+        if (error.message === 'Topic not found') {
+          return res.status(404).send({ message: 'Topic not found' });
+        }
+        next(error);
+      });
+  } else {
+    
+    getArticles(sortColumn, sortOrder)
+      .then((articles) => {
+        res.status(200).send({ articles });
+      })
+      .catch(next); 
+  }
 };
 
 exports.fetchComments = (req, res, next) => {

@@ -124,6 +124,28 @@ describe('GET /api/articles', () => {
         expect(sortedArticles).toBeSortedBy('created_at', { descending: false });
       });
   });
+
+  it('200 - responds with all articles when topic query is omitted', () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.articles)).toBe(true);
+        expect(body.articles.length).toBeGreaterThan(0); 
+      })
+  });
+
+  it('200 - responds with articles filtered by topic when passed a topic query', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch')
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.articles)).toBe(true);
+        body.articles.forEach(article => {
+          expect(article.topic).toBe('mitch')
+        });
+      })
+  })
 });
 
 describe('ERRORS - /api/articles', () => {
@@ -162,6 +184,14 @@ describe('ERRORS - /api/articles', () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe('Bad Request! Invalid sort_by parameter.');
+      });
+  });
+  it('404 - responds with an error for a non-existent topic', () => {
+    return request(app)
+      .get('/api/articles?topic=nonexistent_topic')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe('Topic not found');
       });
   });
 });
