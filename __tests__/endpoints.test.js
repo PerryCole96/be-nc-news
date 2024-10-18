@@ -98,6 +98,32 @@ describe('GET /api/articles', () => {
         expect(sortedArticles).toBeSortedBy('created_at', { descending: true });
       });
   });
+
+  it('should respond with articles sorted by votes in ascending order when passed a sort_by query', () => {
+    return request(app)
+      .get('/api/articles?sort_by=votes&order=asc') 
+      .expect(200)
+      .then(({ body }) => {
+        const sortedArticles = body.articles.map(article => ({
+          ...article,
+          votes: article.votes,
+        }));
+        expect(sortedArticles).toBeSortedBy('votes', { descending: false });
+      });
+  });
+
+  it('200 - responds with articles sorted by created_at in ascending order when passed sort_by and order', () => {
+    return request(app)
+      .get('/api/articles?sort_by=created_at&order=asc')
+      .expect(200)
+      .then(({ body }) => {
+        const sortedArticles = body.articles.map(article => ({
+          ...article,
+          created_at: new Date(article.created_at),
+        }));
+        expect(sortedArticles).toBeSortedBy('created_at', { descending: false });
+      });
+  });
 });
 
 describe('ERRORS - /api/articles', () => {
@@ -106,7 +132,7 @@ describe('ERRORS - /api/articles', () => {
       .get('/api/articles?sort_by=invalid_column')
       .expect(400)
       .then(({ body }) => {
-        expect(body.message).toBe('Bad Request!');
+        expect(body.message).toBe('Bad Request! Invalid sort_by parameter.');
       });
   });
 
@@ -118,6 +144,24 @@ describe('ERRORS - /api/articles', () => {
         articles.forEach(article => {
           expect(article.body).toBeUndefined();
         });
+      });
+  });
+
+  it('400 - returns an error when given an invalid order value', () => {
+    return request(app)
+      .get('/api/articles?order=invalid_order')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe('Bad Request! Invalid order parameter.');
+      });
+  });
+
+  it('400 - returns an error when given an invalid column as a sort_by query', () => {
+    return request(app)
+      .get('/api/articles?sort_by=invalid_column')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe('Bad Request! Invalid sort_by parameter.');
       });
   });
 });
@@ -339,7 +383,7 @@ describe('DELETE - /api/comments/:comment_id', () => {
         });
     });
 
-  describe('ERRORS - invalid comment IDs', () => {
+describe('ERRORS - invalid comment IDs', () => {
     it('404 - responds with an error if the comment_id does not exist', () => {
       return request(app)
         .delete('/api/comments/9999')

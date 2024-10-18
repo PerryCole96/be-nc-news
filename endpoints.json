@@ -10,8 +10,25 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "description": "serves an array of all articles, sortable by various fields",
+    "queries": [
+      {
+        "name": "author",
+        "description": "Filter articles by author."
+      },
+      {
+        "name": "topic",
+        "description": "Filter articles by topic."
+      },
+      {
+        "name": "sort_by",
+        "description": "Specify the field to sort articles by. Acceptable values: 'author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'article_img_url', 'comment_count'."
+      },
+      {
+        "name": "order",
+        "description": "Specify the order of sorting. Acceptable values: 'asc' for ascending, 'desc' for descending."
+      }
+    ],
     "exampleResponse": {
       "articles": [
         {
