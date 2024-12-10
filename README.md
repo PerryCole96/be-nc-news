@@ -5,7 +5,7 @@
 
 ## **Project Overview**
 
-NC News API is a backend service built using **Node.js** and **Express** that serves as the foundation for a fictional news website. The API allows users to interact with articles, topics, comments, and user data through RESTful endpoints. It includes features for managing articles, voting, retrieving user data, and more. The project was developed as part of the **Northcoders** bootcamp to demonstrate skills in backend development, database management, and API design.
+NC News API is a backend service built using **Node.js** and **Express** that serves as the foundation for an article hosting website. The API allows users to interact with articles, topics, comments, and user data through RESTful endpoints. It includes features for managing articles, voting, retrieving user data, and more. The project was developed as part of the **Northcoders** bootcamp to demonstrate skills in backend development, database management, and API design.
 
 ---
 
@@ -65,4 +65,26 @@ The full list of API endpoints is available in JSON format, detailing all the av
    ```bash
    git clone https://github.com/PerryCole96/be-nc-news
    cd be-nc-news
+   
+2. Install dependencies
+   ```bash
+   npm install
+   
+3. Set up environment variables for development and testing:
 
+   .env.development: PGDATABASE=nc_news
+   .env.test: PGDATABASE=nc_news_test
+
+4. Run the database migrations:
+   ```bash
+   npm run migrate
+
+5. Seed the database with initial data:
+   ```bash
+   npm run seed
+
+6. Start the server:
+   ```bash
+   npm start
+
+The API will be available locally at http://localhost:9090/api.
