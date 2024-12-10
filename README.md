@@ -1,47 +1,68 @@
 # NC News API
 
-[Live Demo]
+[Live Demo]  
 *https://perry-be-nc-news.onrender.com/api*
 
-## Summary
+## **Project Overview**
 
-The NC News API is a RESTful API built with Node.js and Express, allowing users to access and manage articles, topics, and comments related to a fictional news website. It features CRUD operations for articles and comments and supports various filtering and sorting capabilities.
+NC News API is a backend service built using **Node.js** and **Express** that serves as the foundation for a fictional news website. The API allows users to interact with articles, topics, comments, and user data through RESTful endpoints. It includes features for managing articles, voting, retrieving user data, and more. The project was developed as part of the **Northcoders** bootcamp to demonstrate skills in backend development, database management, and API design.
 
-## Features
+---
 
-- Fetch articles by ID, author, and topic
-- Create, read, update, and delete comments
-- Vote on articles
-- Retrieve user data
-- Seed the database with initial data
+## **Key Features**
 
-## Technologies Used
+### **Article Management**
+- Allows users to fetch articles by ID, author, or topic.
+- Provides the ability to vote on articles, helping to surface popular content.
+- Supports sorting and filtering articles based on various fields such as title, votes, and comment count.
 
-- Node.js
-- Express
-- PostgreSQL
-- Supabase (for hosting the database)
-- Render (for hosting the API)
-- Jest (for testing)
+### **Commenting System**
+- Users can create and delete comments for articles.
+- Each comment can be voted on, providing users with the ability to interact with the content.
 
+### **User Data**
+- Retrieve a list of all users in the system.
+- Each user has an avatar and a name, providing a simple user profile system.
 
-### Cloning the Repository
+### **Database Seeding**
+- A script to seed the database with initial test data to support development and testing.
 
-To get a local copy of this project 
+---
 
-```bash
-git clone https://github.com/your-username/nc-news-api.git
-Project requires environment files for test and dev to be created
-within the main repo folder
+## **Technologies Used**
 
-### environment variables
+### **Backend**
+- **Node.js**: JavaScript runtime for building the API.
+- **Express**: Web framework used for building RESTful endpoints.
+- **PostgreSQL**: Relational database for storing articles, comments, and user data.
+- **Knex.js**: SQL query builder for interacting with the PostgreSQL database.
+- **Supabase**: Cloud platform for hosting the database and backend.
+- **Jest**: Testing framework for writing and running unit tests.
 
-.env.test - PGDATABASE=nc_news_test
-.env.development - PGDATABASE=nc_news
+---
 
+## **Development Experience**
 
---- 
+This project provided valuable experience in the following areas:
 
-This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
+- **Backend API development**: Implementing a RESTful API using Node.js and Express.
+- **Database design**: Creating a relational database schema with PostgreSQL, including handling relationships between users, articles, and comments.
+- **Database management**: Writing migration and seeding scripts to set up and populate the database.
+- **Testing and validation**: Using Jest to write unit and integration tests to ensure the API functions as expected.
+- **Deployment**: Deploying the API to the cloud using **Render** and **Supabase** for production database hosting.
 
-I'm tired...
+---
+
+## **API Endpoints**
+
+The full list of API endpoints is available in JSON format, detailing all the available routes and their parameters. The endpoints support a variety of functionalities, including retrieving articles, managing comments, and voting on content. Please refer to the API documentation for the complete endpoint specification.
+
+---
+
+## **Setup Instructions**
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/PerryCole96/be-nc-news
+   cd be-nc-news
+
