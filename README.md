@@ -1,31 +1,28 @@
-# NC News API
+# NC News Full-Stack Application
 
-[Live Demo]  
-*https://perry-be-nc-news.onrender.com/api*
+[Live Demo - Backend API](https://perry-be-nc-news.onrender.com/api)
 
 ## **Project Overview**
 
-NC News API is a backend service built using **Node.js** and **Express** that serves as the foundation for an article hosting website. The API allows users to interact with articles, topics, comments, and user data through RESTful endpoints. It includes features for managing articles, voting, retrieving user data, and more. The project was developed as part of the **Northcoders** bootcamp to demonstrate skills in backend development, database management, and API design.
+NC News is a full-stack web application featuring a **React.js** frontend and an **Express.js** backend powered by **PostgreSQL**. This project was developed as part of the **Northcoders** bootcamp to showcase skills in backend development, API design, and frontend development. The application allows users to view and interact with articles, comments, and topics, with features for voting and filtering.
 
 ---
 
 ## **Key Features**
 
-### **Article Management**
-- Allows users to fetch articles by ID, author, or topic.
-- Provides the ability to vote on articles, helping to surface popular content.
-- Supports sorting and filtering articles based on various fields such as title, votes, and comment count.
+### **Backend Features (API)**
+- **Article Management**: Fetch, create, and filter articles by ID, author, or topic.
+- **Commenting System**: Create, delete, and vote on comments associated with articles.
+- **User Data**: Retrieve user profiles, including avatars and usernames.
+- **Voting System**: Vote on articles and comments to influence their ranking.
+- **Database Seeding**: Pre-populated with test data for development and testing.
 
-### **Commenting System**
-- Users can create and delete comments for articles.
-- Each comment can be voted on, providing users with the ability to interact with the content.
-
-### **User Data**
-- Retrieve a list of all users in the system.
-- Each user has an avatar and a name, providing a simple user profile system.
-
-### **Database Seeding**
-- A script to seed the database with initial test data to support development and testing.
+### **Frontend Features**
+- **Article Display**: View a list of articles with sorting options like date, vote count, and comment count.
+- **Article Details**: View individual articles along with comments and voting options.
+- **User Authentication**: Users can log in to see their profile and interact with content.
+- **Voting**: Vote on articles and comments to update their vote counts in real-time.
+- **Topic Filtering**: Filter articles by various topics like **Coding**, **Cooking**, and **Football**.
 
 ---
 
@@ -38,24 +35,28 @@ NC News API is a backend service built using **Node.js** and **Express** that se
 - **Knex.js**: SQL query builder for interacting with the PostgreSQL database.
 - **Supabase**: Cloud platform for hosting the database and backend.
 - **Jest**: Testing framework for writing and running unit tests.
+- **Model-View-Controller (MVC)**: Architecture used for API design.
+
+### **Frontend**
+- **React.js**: JavaScript library for building dynamic user interfaces with a component-based architecture.
+- **React Router**: Library for handling client-side routing and page navigation.
+- **React Context API**: Used for managing global state, such as user authentication data.
+- **CSS**: Custom styling to create a responsive, user-friendly design.
+- **Axios**: HTTP client for making API requests and fetching data.
 
 ---
 
 ## **Development Experience**
 
-This project provided valuable experience in the following areas:
+This project provided hands-on experience in the following areas:
 
-- **Backend API development**: Implementing a RESTful API using Node.js and Express.
-- **Database design**: Creating a relational database schema with PostgreSQL, including handling relationships between users, articles, and comments.
-- **Database management**: Writing migration and seeding scripts to set up and populate the database.
-- **Testing and validation**: Using Jest to write unit and integration tests to ensure the API functions as expected.
-- **Deployment**: Deploying the API to the cloud using **Render** and **Supabase** for production database hosting.
-
----
-
-## **API Endpoints**
-
-The full list of API endpoints is available in JSON format, detailing all the available routes and their parameters. The endpoints support a variety of functionalities, including retrieving articles, managing comments, and voting on content. Please refer to the API documentation for the complete endpoint specification.
+- **Backend API Development**: Creating RESTful endpoints with Express and interacting with the database using Knex.js.
+- **Database Design and Management**: Setting up and managing a PostgreSQL database, including migrations and seed data.
+- **Frontend Development**: Building a React app with reusable components and integrating it with the backend API.
+- **State Management**: Using React Context to manage global state, such as user authentication and article data.
+- **Routing**: Implementing dynamic routing with React Router for smooth navigation.
+- **Testing**: Following TDD principles for backend testing using Jest and ensuring frontend reliability with tests.
+- **Deployment**: Deploying the backend API to Render and the frontend to a cloud platform.
 
 ---
 
